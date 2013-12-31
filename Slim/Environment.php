@@ -135,7 +135,11 @@ class Environment implements \ArrayAccess, \IteratorAggregate
             if (strpos($requestUri, $scriptName) !== false) {
                 $physicalPath = $scriptName; // <-- Without rewriting
             } else {
-                $physicalPath = str_replace('\\', '', dirname($scriptName)); // <-- With rewriting
+                if (array_key_exists('REDIRECT_URL', $_SERVER) && ($_SERVER['REDIRECT_URL'] != $_SERVER['SCRIPT_NAME']) && (strpos(dirname($_SERVER['REDIRECT_URL']), basename($_SERVER['SCRIPT_NAME'])) == 0)) {
+                    $physicalPath = dirname($_SERVER['REDIRECT_URL']); // <-- With rewriting to a subfolder
+                } else {
+                    $physicalPath = str_replace('\\', '', dirname($scriptName)); // <-- With rewriting
+                }
             }
             $env['SCRIPT_NAME'] = rtrim($physicalPath, '/'); // <-- Remove trailing slashes
 
